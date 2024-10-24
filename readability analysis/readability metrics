@@ -1,0 +1,48 @@
+import os
+import csv
+import textstat
+from collections import Counter
+import re
+import math
+
+def calculate_yules_i(text):
+    # Tokenize the text into words, remove non-alphabetic characters and convert to lowercase
+    tokens = re.findall(r'\b[a-z]+\b', text.lower())
+    # Count the occurrences of each word
+    word_counts = Counter(tokens)
+    # Calculate m1 (the total number of words) and m2 (the sum of each frequency squared)
+    m1 = sum(word_counts.values())
+    m2 = sum(frequency ** 2 for frequency in word_counts.values())
+    # Calculate Yule's K measure
+    yules_k = (m2 - m1) / (m1 ** 2)
+    # Convert Yule's K to Yule's I
+    yules_i = 1 / yules_k if yules_k != 0 else 0
+    return yules_i
+
+def extract_readability_metrics(folder_path):
+    csv_file_name = r'C:\Users\arnel\OneDrive - KU Leuven\Thesis Economics\Python\Features\Readability analysis\readability metrics.csv'
+    try:
+        with open(csv_file_name, mode='w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow(['ISIN', 'Flesch Kincaid Grade', 'Yule\'s I'])
+
+            for filename in os.listdir(folder_path):
+                if filename.endswith(".txt"):
+                    # Remove the '.txt' extension from filename
+                    isin_number = filename[:-4]
+                    file_path = os.path.join(folder_path, filename)
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as text_file:
+                            text = text_file.read()
+                            fk_grade = textstat.flesch_kincaid_grade(text)
+                            yules_i = calculate_yules_i(text)
+                            writer.writerow([isin_number, fk_grade, yules_i])
+                    except Exception as e:
+                        print(f"Error reading from file {filename}: {e}")
+    except Exception as e:
+        print(f"Error opening or writing to CSV file: {e}")
+
+    print(f'Results saved to {csv_file_name}')
+
+folder_path = r'C:\Users\arnel\OneDrive - KU Leuven\Thesis Economics\Python\Prospectus Processed Files English'
+extract_readability_metrics(folder_path)
