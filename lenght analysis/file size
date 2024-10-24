@@ -1,0 +1,34 @@
+import os
+import csv
+
+# Specify the directory containing the PDF files
+directory_path = r'C:\Users\arnel\OneDrive - KU Leuven\Thesis Economics\Python\Prospectus PDFs'
+
+# Specify the CSV file path where the results will be saved
+csv_file_path = r'C:\Users\arnel\OneDrive - KU Leuven\Thesis Economics\Python\Features\Graphic content analysis\file size.csv'
+
+# Function to get the file size in MB
+def get_file_size_in_mb(file_path):
+    size_bytes = os.path.getsize(file_path)
+    size_mb = size_bytes / (1024 * 1024)  # Convert bytes to MB
+    return size_mb
+
+# Create or overwrite the CSV file and write headers
+with open(csv_file_path, 'w', newline='', encoding='utf-8') as csv_file:
+    writer = csv.writer(csv_file)
+    writer.writerow(['ISIN', 'Size (MB)'])
+
+    # Loop through all files in the directory
+    for filename in os.listdir(directory_path):
+        if filename.lower().endswith('.pdf'):
+            # Full path to the PDF file
+            full_path = os.path.join(directory_path, filename)
+            
+            # Get the file size in MB
+            size_mb = get_file_size_in_mb(full_path)
+            
+            # Remove the file extension and write the file name and size to the CSV
+            filename_without_extension = os.path.splitext(filename)[0]
+            writer.writerow([filename_without_extension, size_mb])
+
+print('File sizes have been determined')
