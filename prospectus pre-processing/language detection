@@ -1,0 +1,41 @@
+import os
+import csv
+from langdetect import detect, LangDetectException
+
+def detect_language(text):
+    try:
+        return detect(text)
+    except LangDetectException:
+        return "Language detection failed"
+
+def process_directory(directory_path, output_csv_path):
+    results = []
+    # Iterate through all files in the directory
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".txt"):  # Check if the file is a text file
+            file_path = os.path.join(directory_path, filename)
+            with open(file_path, 'r', encoding='utf-8') as file:
+                text = file.read()
+            # Detect the language of the text
+            language = detect_language(text)
+            # Remove the '.txt' extension from the filename
+            clean_filename = filename[:-4]  # Remove the last 4 characters '.txt'
+            results.append({'ISIN': clean_filename, 'Prospectus language': language})
+
+    # Write results to a CSV file
+    with open(output_csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+        fieldnames = ['ISIN', 'Prospectus language']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for result in results:
+            writer.writerow(result)
+
+# Specify the directory containing the text files
+input_directory = r'C:\Users\arnel\OneDrive - KU Leuven\Thesis Economics\Python\Prospectus Text Files'
+# Specify the path for the output CSV file
+output_csv_file = r'C:\Users\arnel\OneDrive - KU Leuven\Thesis Economics\Python\Features\Readability analysis\language.csv'
+
+# Process the directory
+process_directory(input_directory, output_csv_file)
+
+print('Language detected')
