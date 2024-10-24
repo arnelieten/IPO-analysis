@@ -1,0 +1,27 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load csv file
+df = pd.read_csv(r'C:\Users\arnel\OneDrive - KU Leuven\Thesis Economics\Python\Data\Prepared data.csv', parse_dates=['IPO Date'])
+
+# Check balance of dataset [Country, Industry, Main exchange, Currency]
+category_counts = df['Currency'].value_counts().sort_index()
+plt.figure(figsize=(10, 6))
+sns.barplot(x=category_counts.index, y=category_counts.values, palette="viridis")
+plt.xlabel('', fontsize=14)
+plt.ylabel('Number of IPOs', fontsize=14)
+plt.title('Currency Segmentation', fontsize=16)
+plt.xticks(rotation=90, fontsize=12) 
+plt.yticks(fontsize=12)
+plt.tight_layout()
+plt.show()
+
+# PIE CHART
+#category_counts = df['Currency'].value_counts().sort_index()
+#plt.figure(figsize=(10, 6))
+#plt.pie(category_counts.values, labels=category_counts.index, autopct='%1.1f%%', colors=plt.cm.viridis(np.linspace(0, 1, len(category_counts))))
+#plt.title('Currency Segmentation', fontsize=16)
+#plt.tight_layout()
+#plt.show()
